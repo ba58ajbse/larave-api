@@ -1,0 +1,35 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:1.19.1
+    container_name: laravel-api-nginx
+    ports:
+      - 8085:8085
+    depends_on:
+      - php
+      - db
+    volumes:
+      - ./docker/nginx/server.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html
+
+  php:
+    build: ./docker/php
+    container_name: laravel-api-php
+    depends_on:
+      - db
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/php/log/:/var/log/php/
+
+  db:
+    image: mysql:5.7
+    container_name: laravel-api-mysql
+    ports:
+      - 23306:3306
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/log/:/var/log/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      TZ: Asia/Tokyo
